@@ -1,0 +1,25 @@
+<head>
+
+	<link rel='stylesheet' href='bootstrap.min.css' />
+	<script type="text/javascript" src='jquery-2.1.1.min.js'></script>
+	<script type="text/javascript" src='bootstrap.min.js'></script>
+	
+</head>
+
+<body>
+	<script type="text/javascript" src='drawTriangels.js'></script>
+	<div class='row-fliud text-center'> 
+		<h1>Draw Your Triangles Here:</h1>
+	</div>
+	<div class='row-fliud text-center'> 
+		<h3>Choose a color for your triangles:</h3>
+		<input class='span2' type='color' name='colorPicker' id='colorPicker' value="#ff0000" style ='height:33px'/>
+	</div>
+	<div class='row-fliud offset4' style='margin-top:20px'> 
+		<input class=' span2 btn btn-primary ' type='button' name='clearButtons' id='clearButtons' value='Clear Canvas' />
+	</div>
+	<div class='row text-center'>
+		<canvas class='span8 offset4' id='canvas' style='height:500px;border:2px solid;margin-top:50px;'>
+		</canvas>
+	</div>
+</body>
