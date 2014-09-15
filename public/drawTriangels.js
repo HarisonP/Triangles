@@ -1,4 +1,4 @@
-function trangleInterface(canvasSelector,colorPickerSelector, clearButtonSelector,saveInterface){
+function trangleInterface(canvasSelector, userInterface,colorPickerSelector, clearButtonSelector,saveInterface){
 	var self = this;
 
 	this.points = [];
@@ -10,6 +10,12 @@ function trangleInterface(canvasSelector,colorPickerSelector, clearButtonSelecto
 
 	if(!self.canvas[0].getContext){
 		this.error = true
+	}
+
+	if(userInterface){
+		self.canvas.click(function(e){
+			self.drawATriangleWithClicks(e)
+		});
 	}
 
 	$(colorPickerSelector).change(function(){
@@ -94,16 +100,35 @@ function trangleInterface(canvasSelector,colorPickerSelector, clearButtonSelecto
 	};
 };
 
-function stateSaveLoadInterface(uploadButtonSelector, nameFieldSelector){
+function stateSaveLoadInterface(uploadButtonSelector, nameFieldSelector, loadMenuSelector, loadStateButtonSelector){
 	var state = [],
 		self = this;
+	function sortSelectMenu(menu){
+		var options = menu.find('option');
+		
+		options.sort(
+			function(a, b) {
+			    var compA = $(a).text().trim().toUpperCase();
+			    var compB = $(b).text().trim().toUpperCase();
+			    return compA.localeCompare(compB);
+		 	});
+
+		menu.find('option').remove();
+		menu.append(options);
+	}
 
 	this.uploadButton = $(uploadButtonSelector);
 	this.nameField = $(nameFieldSelector);
-
+	this.statesInfo = {};
+	this.loadMenu = $(loadMenuSelector);
+	this.loadStateButton = $(loadStateButtonSelector);
 
 	this.uploadButton.click(function(){	
 		self.uploadState();
+	});
+
+	this.loadStateButton.click(function(){
+		self.loadState();
 	});
 
 	this.saveTriangle = function(coordinates,color){
@@ -117,19 +142,43 @@ function stateSaveLoadInterface(uploadButtonSelector, nameFieldSelector){
 	}
 	this.clearState = function(){
 		triagnle = {pointA:[], pointB:[],pointC:[]},
-		state = [],
-		self = this;
+		state = [];
 	}
 	this.uploadState = function(){
 		$.post('/saveCanvas',{name:self.nameField.val(),state:JSON.stringify(state)},
 			function(response){
-				console.log(response);
 				if(response.success){
 					$('.ui-dialog-titlebar-close').click();
-					console.log(response);
+					var option = '<option value=' + response.newState._id + '>' + 
+								  response.newState.title + '</option>';
+					
+					self.loadMenu.append(option);
+					sortSelectMenu(self.loadMenu);
+					self.loadMenu.trigger('chosen:updated');
+					self.statesInfo[response.newState._id] = response.newState.state;
 				}
 			}
 		);
+	}
+	this.loadState = function(){
+		var id = self.loadMenu.val();
+		var loadTriangleInreface = new trangleInterface('#canvas',false,'','','');
+		loadTriangleInreface.clearCanvas();
+		self.clearState();
+		$.each(self.statesInfo[id],function(index){
+			
+			loadTriangleInreface.drawPoint(this.pointA);
+			loadTriangleInreface.drawPoint(this.pointB);
+			loadTriangleInreface.drawPoint(this.pointC);
+
+			loadTriangleInreface.drawLine(this.pointA,this.pointB);
+			loadTriangleInreface.drawLine(this.pointB,this.pointC);
+			loadTriangleInreface.drawLine(this.pointC,this.pointA);
+
+			loadTriangleInreface.drawTriagle(this.pointA,this.pointB, this.pointC,this.color);
+			self.saveTriangle([this.pointA,this.pointB,this.pointC],this.color);
+		});
+		delete loadTriangleInreface;
 	}
 }
 
@@ -142,10 +191,8 @@ $(document).ready(function(){
 	$('#canvas').attr('height', $('#canvas').css('height'));
 	$('#canvas').attr('width', $('#canvas').css('width'));
 
-	var localStateSaveLoadInterface = new stateSaveLoadInterface('#uploadState', '#canvasName');
-	var usersTriangleInreface = new trangleInterface('#canvas','#colorPicker','#clearButtons',localStateSaveLoadInterface);
+	var localStateSaveLoadInterface = new stateSaveLoadInterface('#uploadState', '#canvasName','#selectCanvasForLoading','#loadCanvas');
+	var usersTriangleInreface = new trangleInterface('#canvas',true,'#colorPicker','#clearButtons',localStateSaveLoadInterface);
 	
-	canvas.click(function(e){
-		usersTriangleInreface.drawATriangleWithClicks(e);
-	});
-})
+	localStateSaveLoadInterface.statesInfo = statesInfo;
+});

@@ -25,10 +25,21 @@
 	<div class='row-fliud offset4' style='margin-top:20px'> 
 		<input class=' span2 btn btn-primary ' type='button' name='clearButtons' id='clearButtons' value='Clear Canvas' />
 		<span class='offset1'>
-			<select  id='selectCanvasForLoading' style='margin-top:10px'></select>
+			<select id='selectCanvasForLoading' style='margin-top:10px'>
+				<script type="text/javascript">
+					var statesInfo = {};
+				</script>
+				<% for(var i = 0; i < states.length; i++) {%>
+   					<option value=<%=states[i].id%>><%= states[i].title %> </option>
+
+   					<script type="text/javascript">   						
+   						statesInfo['<%-states[i].id%>'] = <%-JSON.stringify(states[i].state)%>;			
+   					</script>
+				<% } %>
+			</select>
 			<input class='span2 btn btn-primary ' type='button' name='loadCanvas' id='loadCanvas' value='Load' />
 			<script type="text/javascript">
-				$('#selectCanvasForLoading').chosen()
+				$('#selectCanvasForLoading').chosen();
 			</script>
 		</span>
 	</div>

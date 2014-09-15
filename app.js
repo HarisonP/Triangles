@@ -14,16 +14,22 @@ var mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost/triangels');
 var stateSchema = require('./stateSchema');
 
-app.get('/', function(req, res){
-  res.render('canvas.html', { title: 'Hey', message: 'Hello there!'});
-  res.end();
+app.get('/', function(req, res){	
+  var query = stateSchema.State.find().sort([['titleLowerCase', 'ascending']]);
+  
+  query.exec(function(err, states){
+  	// console.log(states);
+  	res.render('canvas.html', { states: states});
+  	res.end();
+
+  });
 });
 
 app.post('/saveCanvas',function(req,res,params){
 	var name = req.body.name, 
 		state = JSON.parse(req.body.state);
 
-	var newState = stateSchema.State.create({title:name, state:state},function(err,saved){
+	var newState = stateSchema.State.create({title:name,titleLowerCase:name.toLowerCase(), state:state},function(err,saved){
 		if (err) 
 			return handleError(err);
 
@@ -31,8 +37,9 @@ app.post('/saveCanvas',function(req,res,params){
     	res.end(JSON.stringify({ success:true, newState:saved}));
 	});
 
-	// console.log(name,state);
 });
+
+
 var server = app.listen(3000, function() {
     console.log('Listening on port %d', server.address().port);
 });
