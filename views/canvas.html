@@ -1,8 +1,15 @@
 <head>
 
 	<link rel='stylesheet' href='bootstrap.min.css' />
+	<link rel='stylesheet' href='jquery-ui.css' />
+	<link rel='stylesheet' href='chosen.min.css' />
+	
 	<script type="text/javascript" src='jquery-2.1.1.min.js'></script>
+	<script type="text/javascript" src='jquery-ui.js'></script>
+	<script type="text/javascript" src='chosen.jquery.min.js'></script>
+	
 	<script type="text/javascript" src='bootstrap.min.js'></script>
+	
 	
 </head>
 
@@ -17,9 +24,26 @@
 	</div>
 	<div class='row-fliud offset4' style='margin-top:20px'> 
 		<input class=' span2 btn btn-primary ' type='button' name='clearButtons' id='clearButtons' value='Clear Canvas' />
+		<span class='offset1'>
+			<select  id='selectCanvasForLoading' style='margin-top:10px'></select>
+			<input class='span2 btn btn-primary ' type='button' name='loadCanvas' id='loadCanvas' value='Load' />
+			<script type="text/javascript">
+				$('#selectCanvasForLoading').chosen()
+			</script>
+		</span>
 	</div>
 	<div class='row text-center'>
 		<canvas class='span8 offset4' id='canvas' style='height:500px;border:2px solid;margin-top:50px;'>
 		</canvas>
+	<div class='span10 text-center' style='margin-top:20px'>
+		<input class=' offset6 btn btn-primary ' type='button' name='save' value='Save Canvas' onclick = "$('#savePopup').dialog()"/>
 	</div>
+	</div>
+	<div id = 'savePopup' style='display:none'  title="Insert Name">
+		<label for='canvasName'> Insert a name for the canvas: </label>
+		<input type='text' id='canvasName'/>
+		<div class='row-fluid text-center'>
+			<input class=' span8 btn btn-primary ' type='button' name='uploadState' id='uploadState' value='Save Canvas State' />
+		</div>
+	</div> 
 </body>
