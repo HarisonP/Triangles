@@ -56,6 +56,44 @@ function trangleInterface(canvasSelector, userInterface,colorPickerSelector, cle
 			self.canvasContext.closePath();
 		}
 	};
+
+	function choosePropertFontColor(backgroundColor){
+		backgroundColor = backgroundColor.replace('#','');
+
+	    var r = parseInt(backgroundColor.substr(0,2),16);
+	    var g = parseInt(backgroundColor.substr(2,2),16);
+	    var b = parseInt(backgroundColor.substr(4,2),16);
+	    var yiq = ((r*299)+(g*587)+(b*114))/1000;
+	    // console.log(r,g,b,yiq);
+	    return (yiq >= 64) ? '#000000' : '#ffffff' ;
+	}
+	this.calculateTriangleArea = function(coordinatesA, coordinatesB, coordinatesC){
+		  var numerator = Math.abs(   (coordinatesA.x * (coordinatesB.y - coordinatesC.y)) 
+		  							+ (coordinatesB.x * (coordinatesC.y - coordinatesA.y)) 
+		  							+ (coordinatesC.x * (coordinatesA.y - coordinatesB.y))
+		  							)
+		  return numerator/2
+	};
+	//private:
+	function distance(coordinatesA,coordinatesB){
+		var dx = coordinatesB.x - coordinatesA.x; 
+		var dy = coordinatesB.y - coordinatesA.y;
+		return Math.sqrt(dx * dx + dy * dy); 	
+	};
+	this.calculateTriangleCenter = function(coordinatesA,coordinatesB,coordinatesC){
+		var a = parseInt(distance(coordinatesB,coordinatesC),10), 
+		b = parseInt(distance(coordinatesA,coordinatesC),10),
+		c = parseInt(distance(coordinatesA,coordinatesB),10),
+		p = a + b + c;
+
+		var center = {x:0,y:0};
+		center.x = (a * coordinatesA.x + b * coordinatesB.x + c * coordinatesC.x)/p; 
+		center.y = (a * coordinatesA.y + b * coordinatesB.y + c * coordinatesC.y)/p; 
+		
+		center.x = parseInt(center.x);
+		center.y = parseInt(center.y);
+		return center;
+	}
 	this.drawTriagle = function(coordinatesA, coordinatesB, coordinatesC, fillColor){
 
 		if(!self.error){
@@ -70,8 +108,25 @@ function trangleInterface(canvasSelector, userInterface,colorPickerSelector, cle
 		    self.canvasContext.fillStyle = fillColor;
 		    self.canvasContext.fill();
 		    self.canvasContext.closePath();
+
+		    
+		    var trianglesCenter = self.calculateTriangleCenter(coordinatesA,coordinatesB,coordinatesC);
+		    var area = self.calculateTriangleArea(coordinatesA,coordinatesB,coordinatesC);
+		    self.canvasContext.textAlign="center";
+
+		    self.canvasContext.strokeStyle = choosePropertFontColor(fillColor);
+		  	
+		  	//TODO: make better algorith for visible text:
+		    if( area < 1500 && self.canvasContext.strokeStyle == '#ffffff'){
+		    	self.canvasContext.strokeStyle = '#000000';
+		    }
+
+			self.canvasContext.strokeText("S = "  + area , trianglesCenter.x,trianglesCenter.y);
+		    
+		    self.canvasContext.strokeStyle  = '#000000'
 		}
 	};
+	
 	this.drawATriangleWithClicks = function(event){
 		var clickCoordinates = self.getMouseCordinatesInCanvas(event),
 			numberOfUserClicks = self.points.length;
@@ -196,3 +251,6 @@ $(document).ready(function(){
 	
 	localStateSaveLoadInterface.statesInfo = statesInfo;
 });
+
+
+
