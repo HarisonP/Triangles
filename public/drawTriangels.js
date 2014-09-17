@@ -233,7 +233,6 @@ function stateSaveLoadInterface(uploadButtonSelector, nameFieldSelector, loadMen
 			loadTriangleInreface.drawTriagle(this.pointA,this.pointB, this.pointC,this.color);
 			self.saveTriangle([this.pointA,this.pointB,this.pointC],this.color);
 		});
-		delete loadTriangleInreface;
 	}
 }
 
